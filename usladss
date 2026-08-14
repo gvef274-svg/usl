@@ -1,202 +1,419 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>تبلیغ</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
-<!--
-  USL ADS SDK
-  وقتی کد اسکریپت رسمی رو از پنل USL ADS Service گرفتی، همینجا جایگزینش کن.
-  چیزی شبیه این خواهد بود: <script src="https://cdn.usl-ads.example/sdk.js" data-app-id="..."></script>
--->
-<style>
-  :root{
-    --bg: #0b0c10;
-    --surface: #14161d;
-    --cyan: #66fcf1;
-    --text: #f4f4f4;
-    --muted: #6b7280;
-  }
-  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-  html, body{
-    margin:0; padding:0; height:100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Vazirmatn', sans-serif;
-    overflow: hidden;
-    touch-action: manipulation;
-  }
-  #app{
-    display:flex;
-    flex-direction: column;
-    align-items:center;
-    justify-content: center;
-    height:100vh;
-    padding: 24px;
-    gap: 28px;
-    text-align:center;
-  }
-  .badge{
-    width:84px; height:84px;
-    border-radius: 24px;
-    background: radial-gradient(circle at 30% 30%, #1c2028, var(--surface));
-    border: 2px solid #262a35;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 38px;
-  }
-  h1{
-    font-size: 20px;
-    font-weight:800;
-    margin: 0;
-  }
-  p{
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.9;
-    margin: 0;
-    max-width: 300px;
-  }
-  .cta{
-    width:100%;
-    max-width: 320px;
-    padding: 17px;
-    border-radius: 16px;
-    border:none;
-    font-family: inherit;
-    font-size:17px;
-    font-weight:800;
-    background: linear-gradient(90deg, var(--cyan), #45a29e);
-    color: #0b0c10;
-    cursor:pointer;
-  }
-  .cta:disabled{ opacity:0.6; }
-  .cta:active{ transform: scale(0.98); }
-  .status{
-    font-size: 13px;
-    color: var(--cyan);
-    min-height: 18px;
-  }
-  .hidden{ display:none !important; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Money The Bank</title>
+  <script src="https://telegram.org/js/telegram-web-app.js?v=7"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a1a2f;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    .app {
+      max-width: 420px;
+      width: 100%;
+    }
 
-  /* ad overlay (placeholder until real SDK is wired in) */
-  .ad-overlay{
-    position:fixed;
-    inset:0;
-    background: rgba(0,0,0,0.9);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:16px;
-    z-index:50;
-  }
-  .ad-overlay .box{
-    width: 86%;
-    max-width: 340px;
-    aspect-ratio: 9/12;
-    background: var(--surface);
-    border: 1px solid #262a35;
-    border-radius: 18px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap: 10px;
-    text-align:center;
-    padding: 20px;
-  }
-  .ad-overlay .box b{ color: var(--cyan); font-size:18px; }
-  .ad-overlay .box span{ color: var(--muted); font-size:13px; line-height:1.9; }
-  .ad-overlay .countdown{
-    font-size: 40px;
-    font-weight:900;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
-</style>
+    /* هدر */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .logo {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      color: #0a1a2f;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+    .brand h1 { font-size: 20px; font-weight: 700; }
+    .brand small { color: #94a3b8; font-size: 12px; }
+
+    /* کارت موجودی */
+    .balance-card {
+      background: linear-gradient(145deg, #112b47, #0a1e33);
+      border-radius: 24px;
+      padding: 28px 20px;
+      text-align: center;
+      border: 1px solid #1e3a5f;
+      margin-bottom: 20px;
+    }
+    .balance-label {
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    .balance-amount {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 6px 0 2px;
+      background: linear-gradient(135deg, #fcd34d, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .balance-unit {
+      color: #fbbf24;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* دکمه اصلی */
+    .earn-section {
+      background: #0e233b;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid #1a3552;
+      margin-bottom: 16px;
+    }
+    .earn-section h2 {
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+    .earn-section p {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #0a1a2f;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.25);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* آمار */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat-box {
+      background: #0e233b;
+      border: 1px solid #1a3552;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-box small {
+      display: block;
+      color: #94a3b8;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+    .stat-box strong {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* برداشت */
+    .withdraw-section {
+      background: #0e233b;
+      border: 1px solid #1a3552;
+      border-radius: 20px;
+      padding: 20px;
+    }
+    .withdraw-section h2 {
+      font-size: 17px;
+      margin-bottom: 12px;
+    }
+    .withdraw-section input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #1a3552;
+      background: #0a1a2f;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+    .withdraw-section input::placeholder {
+      color: #475569;
+    }
+    .btn-secondary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      background: #1a3552;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:active { opacity: 0.8; }
+
+    .footer-note {
+      text-align: center;
+      color: #475569;
+      font-size: 11px;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    /* توست */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e3a5f;
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: 1px solid #2d4a72;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 </head>
 <body>
-<div id="app">
-  <div class="badge">🎬</div>
-  <div>
-    <h1>تماشای تبلیغ</h1>
-    <p>با زدن دکمه‌ی زیر یه تبلیغ کوتاه می‌بینی.</p>
+
+<div class="app">
+  <!-- هدر -->
+  <div class="header">
+    <div class="logo">🏦</div>
+    <div class="brand">
+      <h1>Money The Bank</h1>
+      <small>💰 Watch ads • Earn coins</small>
+    </div>
   </div>
-  <button class="cta" id="watchAdBtn">نمایش تبلیغ</button>
-  <div class="status" id="status"></div>
+
+  <!-- موجودی -->
+  <div class="balance-card">
+    <div class="balance-label">💰 YOUR BALANCE</div>
+    <div class="balance-amount" id="balanceDisplay">0</div>
+    <div class="balance-unit">MB Coins</div>
+  </div>
+
+  <!-- بخش تماشای تبلیغ -->
+  <div class="earn-section">
+    <h2>🎬 Watch & Earn</h2>
+    <p>Watch a short ad and get rewarded with MB Coins instantly.</p>
+    <button class="btn-primary" id="watchBtn" onclick="watchAd()">
+      ▶ WATCH AD +10
+    </button>
+  </div>
+
+  <!-- آمار روزانه -->
+  <div class="stats">
+    <div class="stat-box">
+      <small>📺 Today's ads</small>
+      <strong id="todayAds">0 / 50</strong>
+    </div>
+    <div class="stat-box">
+      <small>📈 Today's earnings</small>
+      <strong id="todayEarn">0</strong>
+    </div>
+  </div>
+
+  <!-- برداشت -->
+  <div class="withdraw-section">
+    <h2>💸 Withdraw</h2>
+    <input type="text" id="walletInput" placeholder="TON wallet address (e.g. UQ...)" />
+    <button class="btn-secondary" onclick="withdraw()">REQUEST WITHDRAWAL</button>
+  </div>
+
+  <div class="footer-note">
+    ⚡ Minimum withdrawal: 1,000 MB Coins<br />
+    🔒 All data is stored locally for demo purposes
+  </div>
 </div>
 
-<!-- ad overlay: placeholder until the real USL SDK call is wired in -->
-<div class="ad-overlay hidden" id="adOverlay">
-  <div class="box">
-    <b>تبلیغ</b>
-    <span>این‌جا محل نمایش تبلیغ USL هست.<br>وقتی کد SDK رسمی رو وصل کنی، تبلیغ واقعی همین‌جا لود می‌شه.</span>
-    <div class="countdown" id="adCountdown">3</div>
-  </div>
-</div>
+<!-- توست -->
+<div class="toast" id="toast"></div>
 
 <script>
-(function(){
-  const tg = window.Telegram ? window.Telegram.WebApp : null;
+  // ======================== تلگرام وب اپ ========================
+  const tg = window.Telegram?.WebApp;
   if (tg) {
     tg.ready();
     tg.expand();
-    if (tg.setHeaderColor) { try { tg.setHeaderColor('#0b0c10'); } catch(e){} }
-    if (tg.setBackgroundColor) { try { tg.setBackgroundColor('#0b0c10'); } catch(e){} }
   }
 
-  const watchAdBtn = document.getElementById('watchAdBtn');
-  const adOverlay = document.getElementById('adOverlay');
-  const adCountdown = document.getElementById('adCountdown');
-  const status = document.getElementById('status');
+  // ======================== تنظیمات ========================
+  const STORAGE_KEY = 'money_the_bank_data';
+  const DAILY_LIMIT = 50;
+  const REWARD_PER_AD = 10;
+  const MIN_WITHDRAW = 1000;
 
-  function haptic(style){
-    if (tg && tg.HapticFeedback) {
-      try { tg.HapticFeedback.impactOccurred(style || 'light'); } catch(e){}
+  // ======================== مدیریت دیتا ========================
+  function getToday() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch {
+      return null;
     }
   }
 
-  // ---------------------------------------------------------------
-  // نمایش تبلیغ
-  // این تابع فعلاً یک نمایش جایگزین (placeholder) ساده‌ست.
-  // وقتی کد رسمی SDK از USL ADS Service رو گرفتی، بخش «TODO» زیر رو
-  // با متد واقعی نمایش تبلیغ آن‌ها جایگزین کن، مثلاً چیزی شبیه:
-  //   USLAds.show({ appId: 'xxxx' }).then(onAdFinished).catch(onAdFinished);
-  // ---------------------------------------------------------------
-  function showAd(onAdFinished){
-    // TODO: به‌جای این بلوک placeholder، فراخوانی واقعی SDK را قرار بده
-    adOverlay.classList.remove('hidden');
-    let secondsLeft = 3;
-    adCountdown.textContent = String(secondsLeft);
-    const timer = setInterval(() => {
-      secondsLeft -= 1;
-      if (secondsLeft <= 0) {
-        clearInterval(timer);
-        adOverlay.classList.add('hidden');
-        onAdFinished();
-        return;
-      }
-      adCountdown.textContent = String(secondsLeft);
-    }, 1000);
+  function getState() {
+    const data = loadData();
+    const today = getToday();
+
+    if (!data || data.date !== today) {
+      return {
+        date: today,
+        balance: 0,
+        dailyAds: 0,
+        dailyEarn: 0
+      };
+    }
+    return data;
   }
 
-  watchAdBtn.addEventListener('click', () => {
-    watchAdBtn.disabled = true;
-    status.textContent = '';
-    haptic('light');
-    showAd(() => {
-      watchAdBtn.disabled = false;
-      status.textContent = 'تبلیغ تموم شد ✅';
-      haptic('medium');
-    });
-  });
-})();
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    renderUI(state);
+  }
+
+  // ======================== رندر UI ========================
+  function renderUI(state) {
+    document.getElementById('balanceDisplay').textContent = state.balance.toLocaleString();
+    document.getElementById('todayAds').textContent = `${state.dailyAds} / ${DAILY_LIMIT}`;
+    document.getElementById('todayEarn').textContent = state.dailyEarn.toLocaleString();
+
+    const btn = document.getElementById('watchBtn');
+    const isLimitReached = state.dailyAds >= DAILY_LIMIT;
+    btn.disabled = isLimitReached;
+    btn.textContent = isLimitReached ? '✅ DAILY LIMIT REACHED' : '▶ WATCH AD +10';
+  }
+
+  // ======================== نمایش پیام ========================
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._timeout);
+    el._timeout = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  // ======================== تابع تماشای تبلیغ ========================
+  async function watchAd() {
+    const state = getState();
+
+    if (state.dailyAds >= DAILY_LIMIT) {
+      showToast('🚫 You\'ve reached today\'s ad limit!');
+      return;
+    }
+
+    const btn = document.getElementById('watchBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ LOADING AD...';
+
+    try {
+      // =====================================================
+      // 🔴 اینجا جای کد واقعی تبلیغات است
+      // =====================================================
+      // مثال با تبلیغات شبکه AdMob / Unity / Telegram Ads
+      // await window.telegramAds.showRewardedVideo();
+      // =====================================================
+
+      // شبیه‌سازی نمایش تبلیغ (۲ ثانیه)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // اعمال پاداش
+      state.balance += REWARD_PER_AD;
+      state.dailyAds += 1;
+      state.dailyEarn += REWARD_PER_AD;
+
+      saveState(state);
+      showToast(`🎉 +${REWARD_PER_AD} MB Coins earned!`);
+
+    } catch (error) {
+      console.error('Ad error:', error);
+      showToast('❌ Failed to show ad. Try again.');
+    } finally {
+      const newState = getState();
+      renderUI(newState);
+      if (newState.dailyAds < DAILY_LIMIT) {
+        btn.textContent = '▶ WATCH AD +10';
+        btn.disabled = false;
+      }
+    }
+  }
+
+  // ======================== برداشت ========================
+  function withdraw() {
+    const state = getState();
+    const wallet = document.getElementById('walletInput').value.trim();
+
+    if (state.balance < MIN_WITHDRAW) {
+      showToast(`⚠️ Minimum withdrawal: ${MIN_WITHDRAW.toLocaleString()} MB Coins`);
+      return;
+    }
+
+    if (!wallet) {
+      showToast('📝 Please enter your wallet address');
+      return;
+    }
+
+    if (wallet.length < 10) {
+      showToast('⚠️ Please enter a valid TON address');
+      return;
+    }
+
+    // =====================================================
+    // 🔴 اینجا درخواست به سرور خودتان ارسال کنید
+    // =====================================================
+    // await fetch('/api/withdraw', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ userId: tg?.initDataUnsafe?.user?.id, wallet, amount: state.balance })
+    // });
+    // =====================================================
+
+    showToast('✅ Withdrawal request submitted!');
+  }
+
+  // ======================== مقداردهی اولیه ========================
+  renderUI(getState());
 </script>
+
 </body>
 </html>
-. 
