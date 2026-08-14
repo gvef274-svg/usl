@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تبلیغ</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+<!--
+  USL ADS SDK
+  وقتی کد اسکریپت رسمی رو از پنل USL ADS Service گرفتی، همینجا جایگزینش کن.
+  چیزی شبیه این خواهد بود: <script src="https://cdn.usl-ads.example/sdk.js" data-app-id="..."></script>
+-->
+<style>
+  :root{
+    --bg: #0b0c10;
+    --surface: #14161d;
+    --cyan: #66fcf1;
+    --text: #f4f4f4;
+    --muted: #6b7280;
+  }
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body{
+    margin:0; padding:0; height:100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Vazirmatn', sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  #app{
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+    height:100vh;
+    padding: 24px;
+    gap: 28px;
+    text-align:center;
+  }
+  .badge{
+    width:84px; height:84px;
+    border-radius: 24px;
+    background: radial-gradient(circle at 30% 30%, #1c2028, var(--surface));
+    border: 2px solid #262a35;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 38px;
+  }
+  h1{
+    font-size: 20px;
+    font-weight:800;
+    margin: 0;
+  }
+  p{
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+    margin: 0;
+    max-width: 300px;
+  }
+  .cta{
+    width:100%;
+    max-width: 320px;
+    padding: 17px;
+    border-radius: 16px;
+    border:none;
+    font-family: inherit;
+    font-size:17px;
+    font-weight:800;
+    background: linear-gradient(90deg, var(--cyan), #45a29e);
+    color: #0b0c10;
+    cursor:pointer;
+  }
+  .cta:disabled{ opacity:0.6; }
+  .cta:active{ transform: scale(0.98); }
+  .status{
+    font-size: 13px;
+    color: var(--cyan);
+    min-height: 18px;
+  }
+  .hidden{ display:none !important; }
+
+  /* ad overlay (placeholder until real SDK is wired in) */
+  .ad-overlay{
+    position:fixed;
+    inset:0;
+    background: rgba(0,0,0,0.9);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    z-index:50;
+  }
+  .ad-overlay .box{
+    width: 86%;
+    max-width: 340px;
+    aspect-ratio: 9/12;
+    background: var(--surface);
+    border: 1px solid #262a35;
+    border-radius: 18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap: 10px;
+    text-align:center;
+    padding: 20px;
+  }
+  .ad-overlay .box b{ color: var(--cyan); font-size:18px; }
+  .ad-overlay .box span{ color: var(--muted); font-size:13px; line-height:1.9; }
+  .ad-overlay .countdown{
+    font-size: 40px;
+    font-weight:900;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="badge">🎬</div>
+  <div>
+    <h1>تماشای تبلیغ</h1>
+    <p>با زدن دکمه‌ی زیر یه تبلیغ کوتاه می‌بینی.</p>
+  </div>
+  <button class="cta" id="watchAdBtn">نمایش تبلیغ</button>
+  <div class="status" id="status"></div>
+</div>
+
+<!-- ad overlay: placeholder until the real USL SDK call is wired in -->
+<div class="ad-overlay hidden" id="adOverlay">
+  <div class="box">
+    <b>تبلیغ</b>
+    <span>این‌جا محل نمایش تبلیغ USL هست.<br>وقتی کد SDK رسمی رو وصل کنی، تبلیغ واقعی همین‌جا لود می‌شه.</span>
+    <div class="countdown" id="adCountdown">3</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const tg = window.Telegram ? window.Telegram.WebApp : null;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) { try { tg.setHeaderColor('#0b0c10'); } catch(e){} }
+    if (tg.setBackgroundColor) { try { tg.setBackgroundColor('#0b0c10'); } catch(e){} }
+  }
+
+  const watchAdBtn = document.getElementById('watchAdBtn');
+  const adOverlay = document.getElementById('adOverlay');
+  const adCountdown = document.getElementById('adCountdown');
+  const status = document.getElementById('status');
+
+  function haptic(style){
+    if (tg && tg.HapticFeedback) {
+      try { tg.HapticFeedback.impactOccurred(style || 'light'); } catch(e){}
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // نمایش تبلیغ
+  // این تابع فعلاً یک نمایش جایگزین (placeholder) ساده‌ست.
+  // وقتی کد رسمی SDK از USL ADS Service رو گرفتی، بخش «TODO» زیر رو
+  // با متد واقعی نمایش تبلیغ آن‌ها جایگزین کن، مثلاً چیزی شبیه:
+  //   USLAds.show({ appId: 'xxxx' }).then(onAdFinished).catch(onAdFinished);
+  // ---------------------------------------------------------------
+  function showAd(onAdFinished){
+    // TODO: به‌جای این بلوک placeholder، فراخوانی واقعی SDK را قرار بده
+    adOverlay.classList.remove('hidden');
+    let secondsLeft = 3;
+    adCountdown.textContent = String(secondsLeft);
+    const timer = setInterval(() => {
+      secondsLeft -= 1;
+      if (secondsLeft <= 0) {
+        clearInterval(timer);
+        adOverlay.classList.add('hidden');
+        onAdFinished();
+        return;
+      }
+      adCountdown.textContent = String(secondsLeft);
+    }, 1000);
+  }
+
+  watchAdBtn.addEventListener('click', () => {
+    watchAdBtn.disabled = true;
+    status.textContent = '';
+    haptic('light');
+    showAd(() => {
+      watchAdBtn.disabled = false;
+      status.textContent = 'تبلیغ تموم شد ✅';
+      haptic('medium');
+    });
+  });
+})();
+</script>
+</body>
+</html>
